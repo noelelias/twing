@@ -3,15 +3,13 @@ const {Readable} = require('stream');
 
 let fixtures = require('./fixtures');
 
-let data = `const {TwingEnvironmentBrowser} = require('../build/lib/environment/browser');
+let data = `const {TwingEnvironmentBrowser} = require('${path.resolve('build/lib/environment/browser')}');
 
 let testCases = [
 `;
 
 for (let fixture of fixtures) {
-    let fixturePath = path.relative(path.resolve('./test'), path.dirname(fixture));
-
-    data += `    new (require('./${fixturePath}/test'))(),\n`;
+    data += `    new (require('${path.dirname(fixture)}/test'))(),\n`;
 }
 
 data += `];

@@ -2,7 +2,7 @@ const TwingTestIntegrationTestCaseBase = require('../../../../../../integration-
 
 module.exports = class extends TwingTestIntegrationTestCaseBase {
     getDescription() {
-        return '"for" tag';
+        return '"for" tag throws an error when accessing the last property with a condition';
     }
 
     getTemplates() {

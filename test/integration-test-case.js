@@ -145,19 +145,23 @@ module.exports = class TwingTestIntegrationTestCaseBase {
         this.twing = env;
     }
 
+    /**
+     * @param includeSandbox
+     * @returns {Map<string, TwingExtensionInterface>}
+     */
     getExtensions(includeSandbox = true) {
-        let extensions = [
-            new TwingExtensionDebug()
-        ];
+        let extensions = new Map([
+            ['TwingExtensionDebug', new TwingExtensionDebug()]
+        ]);
 
         if (includeSandbox) {
             let policy = new TwingSandboxSecurityPolicy([], [], new Map(), new Map(), []);
 
-            extensions.push(new TwingExtensionSandbox(policy, false));
+            extensions.set('TwingExtensionSandbox', new TwingExtensionSandbox(policy, false));
         }
 
-        extensions.push(new TwingExtensionStringLoader());
-        extensions.push(new TwingTestExtension());
+        extensions.set('TwingExtensionStringLoader', new TwingExtensionStringLoader());
+        extensions.set('TwingTestExtension', new TwingTestExtension());
 
         return extensions;
     }
@@ -211,8 +215,8 @@ module.exports = class TwingTestIntegrationTestCaseBase {
             this.setTwing(twing);
 
             // extensions
-            this.getExtensions().forEach(function (extension) {
-                twing.addExtension(extension);
+            this.getExtensions().forEach(function (extension, name) {
+                twing.addExtension(extension, name);
             });
 
             // globals
