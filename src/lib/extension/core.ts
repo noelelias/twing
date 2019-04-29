@@ -1870,7 +1870,7 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
 
                 return object.get(item);
             }
-            else if (typeof object === 'object' && (object.constructor.name === 'Object') && Reflect.has(object, arrayItem) && (typeof Reflect.get(object, arrayItem) !== 'function')) {
+            else if (isPlainObject(object) && Reflect.has(object, arrayItem) && (typeof Reflect.get(object, arrayItem) !== 'function')) {
                 if (isDefinedTest) {
                     return true;
                 }
@@ -1980,7 +1980,7 @@ export function twingGetAttribute(env: TwingEnvironment, object: any, item: any,
 
     // object method
     // precedence: getXxx() > isXxx() > hasXxx()
-    if (!classCache) {
+    if (true) {
         let methods: Array<string> = [];
 
         for (let property of examineObject(object)) {
