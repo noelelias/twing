@@ -25,7 +25,7 @@ export class TwingNodeSpaceless extends TwingNode implements TwingNodeOutputInte
             .addSourceMapEnter(this)
             .write("this.startOutputBuffering();\n")
             .subcompile(this.getNode('body'))
-            .write("this.echo(this.getAndCleanOutputBuffer().replace(/>\\s+</g, '><').trim());\n")
+            .write("this.outputBuffer.(this.getAndCleanOutputBuffer().replace(/>\\s+</g, '><').trim());\n")
             .addSourceMapLeave()
         ;
     }

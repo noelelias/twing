@@ -32,6 +32,7 @@ import {twingFunctionConstant} from "./core/functions/constant";
 import {examineObject} from "./helper/examine-object";
 import {TwingMarkup} from "./markup";
 import {twingFunctionRange} from "./core/functions/range";
+import {TwingOutputBuffer} from "./output-buffer";
 
 const isPlainObject = require('is-plain-object');
 const isBool = require('locutus/php/var/is_bool');
@@ -59,6 +60,7 @@ export abstract class TwingTemplate {
     private sourceName: string;
     private sourcePath: string;
     private source: TwingSource;
+    private outputBuffer: TwingOutputBuffer;
 
     constructor(env: TwingEnvironment) {
         this.env = env;
@@ -375,10 +377,14 @@ export abstract class TwingTemplate {
         this.displayWithErrorHandling(this.env.mergeGlobals(context), twingMerge(this.blocks, blocks) as Map<string, Array<any>>);
     }
 
-    render(context: any): string {
+    render(context: any): any {
         let level = TwingOutputBuffering.obGetLevel();
 
+        this.outputBuffer = new TwingOutputBuffer();
+
         TwingOutputBuffering.obStart();
+
+        this.outputBuffer.start();
 
         try {
             this.display(context);
@@ -391,7 +397,9 @@ export abstract class TwingTemplate {
             throw e;
         }
 
-        return TwingOutputBuffering.obGetClean() as string;
+        return this.outputBuffer.endAndGet();
+
+        // return TwingOutputBuffering.obGetClean() as string;
     }
 
     /**

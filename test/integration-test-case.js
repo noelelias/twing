@@ -70,6 +70,9 @@ class TwingTestExtension extends TwingExtension {
             new TwingFilter('anon_foo', function (name) {
                 return '*' + name + '*';
             }),
+            new TwingFilter('async_filter', function (value) {
+                return Promise.resolve('async ' + value);
+            }),
         ];
     }
 
@@ -84,6 +87,9 @@ class TwingTestExtension extends TwingExtension {
             new TwingFunction('*_foo_*_bar', dynamic_foo),
             new TwingFunction('anon_foo', function (name) {
                 return '*' + name + '*';
+            }),
+            new TwingFunction('async_function', function (name) {
+                return Promise.resolve('async ' + name);
             }),
         ];
     }
@@ -187,7 +193,8 @@ module.exports = class TwingTestIntegrationTestCaseBase {
             // config
             let config = merge({
                 strict_variables: true,
-                cache: false
+                cache: 'tmp/buffer',
+                auto_reload: true
             }, this.getConfig());
 
             let loader = new TwingLoaderArray(templates);
@@ -224,15 +231,17 @@ module.exports = class TwingTestIntegrationTestCaseBase {
 
             if (!expectedErrorMessage) {
                 try {
-                    let actual = twing.render('index.twig', data);
+                    twing.render('index.twig', data)
+                        .then((actual) => {
+                            test.same(actual.trim(), expected.trim(), 'should render as expected');
 
-                    test.same(actual.trim(), expected.trim(), 'should render as expected');
+                            if (consoleStub) {
+                                consoleStub.restore();
 
-                    if (consoleStub) {
-                        consoleStub.restore();
+                                test.same(consoleData, expectedDeprecationMessages, 'should output deprecation warnings');
+                            }
+                        });
 
-                        test.same(consoleData, expectedDeprecationMessages, 'should output deprecation warnings');
-                    }
                 } catch (e) {
                     console.warn(e);
 
