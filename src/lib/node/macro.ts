@@ -56,9 +56,7 @@ export class TwingNodeMacro extends TwingNode {
             .raw('...__varargs__')
             .raw(") {\n")
             .indent()
-        ;
-
-        compiler
+            .write('let macros = this.macros.clone();\n')
             .write("let context = new Runtime.TwingContext(this.env.mergeGlobals(new Map([\n")
             .indent()
         ;

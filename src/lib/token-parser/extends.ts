@@ -18,8 +18,10 @@ export class TwingTokenParserExtends extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
         let stream = this.parser.getStream();
 
-        if (!this.parser.isMainScope()) {
-            throw new TwingErrorSyntax('Cannot extend from a block.', token.getLine(), stream.getSourceContext());
+        if (this.parser.peekBlockStack()) {
+            throw new TwingErrorSyntax('Cannot use "extend" in a block.', token.getLine(), stream.getSourceContext());
+        } else if (!this.parser.isMainScope()) {
+            throw new TwingErrorSyntax('Cannot use "extend" in a macro.', token.getLine(), stream.getSourceContext());
         }
 
         if (this.parser.getParent() !== null) {

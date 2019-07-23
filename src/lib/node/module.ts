@@ -146,7 +146,9 @@ export class TwingNodeModule extends TwingNode {
             .indent()
             .subcompile(this.getNode('constructor_start'))
             .write('super(env);\n\n')
-            .write("this.source = this.getSourceContext();\n\n")
+            .write("this.source = this.getSourceContext();\n")
+            .write("this.macros = new Runtime.TwingContext();\n")
+            .write('let macros = new Runtime.TwingContext();\n\n')
         ;
 
         // parent
@@ -292,6 +294,7 @@ export class TwingNodeModule extends TwingNode {
         compiler
             .write("doDisplay(context, blocks = new Map()) {\n")
             .indent()
+            .write('let macros = this.macros.clone();\n')
             .addSourceMapEnter(this)
             .subcompile(this.getNode('display_start'))
             .subcompile(this.getNode('body'))

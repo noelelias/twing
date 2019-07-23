@@ -16,14 +16,15 @@ import {TwingNodeSpaceless} from "../node/spaceless";
 
 export class TwingTokenParserSpaceless extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
-        console.error('The "spaceless" tag is deprecated since Twig 2.7, use the "spaceless" filter instead.');
-
+        let stream = this.parser.getStream();
         let lineno = token.getLine();
         let columnno = token.getColumn();
 
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+        console.error(`The "spaceless" tag in "${stream.getSourceContext().getName()}" at line ${lineno} is deprecated since Twig 2.7, use the "spaceless" filter instead.`);
+
+        stream.expect(TwingToken.BLOCK_END_TYPE);
         let body = this.parser.subparse([this, this.decideSpacelessEnd], true);
-        this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
+        stream.expect(TwingToken.BLOCK_END_TYPE);
 
         return new TwingNodeSpaceless(body, lineno, columnno, this.getTag());
     }

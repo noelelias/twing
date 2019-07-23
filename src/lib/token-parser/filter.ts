@@ -17,10 +17,14 @@ import {TwingNodePrint} from "../node/print";
  */
 export class TwingTokenParserFilter extends TwingTokenParser {
     parse(token: TwingToken): TwingNode {
-        console.error('The "filter" tag is deprecated since Twig 2.9, use the "apply" tag instead.');
+        let stream = this.parser.getStream();
+        let lineno = token.getLine();
+        let columno = token.getColumn();
+
+        console.error(`The "filter" tag in "${stream.getSourceContext().getName()}" at line ${lineno} is deprecated since Twig 2.9, use the "apply" tag instead.`);
 
         let name = this.parser.getVarName();
-        let ref = new TwingNodeExpressionBlockReference(new TwingNodeExpressionConstant(name, token.getLine(), token.getColumn()), null, token.getLine(), token.getColumn(), this.getTag());
+        let ref = new TwingNodeExpressionBlockReference(new TwingNodeExpressionConstant(name, lineno, columno), null, lineno, columno, this.getTag());
         let filter = this.parser.getExpressionParser().parseFilterExpressionRaw(ref, this.getTag());
 
         this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
@@ -29,11 +33,11 @@ export class TwingTokenParserFilter extends TwingTokenParser {
 
         this.parser.getStream().expect(TwingToken.BLOCK_END_TYPE);
 
-        let block = new TwingNodeBlock(name, body, token.getLine(), token.getColumn());
+        let block = new TwingNodeBlock(name, body, lineno, columno);
 
         this.parser.setBlock(name, block);
 
-        return new TwingNodePrint(filter, token.getLine(), token.getColumn(), this.getTag());
+        return new TwingNodePrint(filter, lineno, columno, this.getTag());
     }
 
     decideBlockEnd(token: TwingToken) {

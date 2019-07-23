@@ -24,6 +24,7 @@ const {
     iconv
 } = require('../../../../../../build');
 
+const {TwingMarkup} = require('../../../../../../build/lib/markup');
 const TwingTestMockEnvironment = require('../../../../../mock/environment');
 const TwingTestMockLoader = require('../../../../../mock/loader');
 
@@ -612,7 +613,8 @@ tap.test('TwingExtensionCore', function (test) {
             [true, '3', new CoreTestIterator(map, keys, true, 3)],
             [false, 4, map],
             [false, 4, new CoreTestIterator(map, keys, true)],
-            [false, 1, 1]
+            [false, 1, 1],
+            [true, 'fo', new TwingMarkup('foo', 'utf-8')]
         ];
 
         for (let inFilterCase of inFilterCases) {

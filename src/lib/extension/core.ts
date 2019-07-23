@@ -95,6 +95,8 @@ import {TwingSourceMapNodeSpaceless} from "../source-map/node/spaceless";
 import {TwingSourceMapNode, TwingSourceMapNodeConstructor} from "../source-map/node";
 import {TwingTokenParserDeprecated} from "../token-parser/deprecated";
 import {TwingTokenParserApply} from "../token-parser/apply";
+import {TwingNodeVisitorMacroAutoImport} from "../node-visitor/macro-auto-import";
+import {TwingContext} from "../context";
 
 const sprintf = require('locutus/php/strings/sprintf');
 const nl2br = require('locutus/php/strings/nl2br');
@@ -600,6 +602,13 @@ export class TwingExtensionCore extends TwingExtension {
             ])
         ];
     }
+
+    getNodeVisitors() {
+        return [
+            new TwingNodeVisitorMacroAutoImport()
+        ];
+    }
+
 
     /**
      * @param {TwingNodeType} type
@@ -1247,6 +1256,10 @@ export function twingInFilter(value: any, compare: any): boolean {
 
     if (value instanceof TwingMarkup) {
         value = value.toString();
+    }
+
+    if (compare instanceof TwingMarkup) {
+        compare = compare.toString();
     }
 
     if (Array.isArray(compare)) {
@@ -2169,4 +2182,32 @@ export function twingFilterReduce(map: any, callback: Function, initial: any = n
     return values.reduce((previousValue: any, currentValue: any): any => {
         return callback(previousValue, currentValue);
     }, initial);
+}
+
+export function twingCallMacro(template: TwingTemplate, method: string, args: any[], lineno: number, context: TwingContext<any, any>, source: TwingSource) {
+    let getCallable: Function = (template: any) => {
+        let candidate: any = template[method];
+
+        if (candidate && (typeof candidate === 'function')) {
+            return candidate;
+        }
+
+        return null;
+    };
+
+    let callable: Function = null;
+    let parent: any = template;
+    let done: boolean = false;
+
+    while (!done) {
+        callable = getCallable(parent);
+
+        done = (callable !== null) || ((parent = parent.getParent(context)) === false);
+    }
+
+    if (!callable) {
+        throw new TwingErrorRuntime(`Macro "${method.substr('macro_'.length)}" is not defined in template "${template.getTemplateName()}".`, lineno, source);
+    }
+
+    return callable.call(template, ...args);
 }

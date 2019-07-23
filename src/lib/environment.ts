@@ -2,7 +2,7 @@ import {TwingTokenParserInterface} from "./token-parser-interface";
 import {TwingNodeVisitorInterface} from "./node-visitor-interface";
 import {TwingExtensionSet} from "./extension-set";
 import {
-    twingArrayMerge,
+    twingArrayMerge, twingCallMacro,
     twingConstant,
     twingEnsureTraversable,
     TwingExtensionCore,
@@ -191,6 +191,7 @@ export abstract class TwingEnvironment extends EventEmitter {
             twingEnsureTraversable: twingEnsureTraversable,
             twingGetAttribute: twingGetAttribute,
             twingInFilter: twingInFilter,
+            twingCallMacro: twingCallMacro,
             TwingMarkup: TwingMarkup,
             echo: echo,
             flush: flush,

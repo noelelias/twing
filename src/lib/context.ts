@@ -2,7 +2,7 @@ export class TwingContext<K, V> {
     private readonly _container: Map<any, any>;
     private readonly _proxy: any;
 
-    constructor(container: Map<K, V>) {
+    constructor(container: Map<K, V> = new Map()) {
         this._container = container;
         this._proxy = new Proxy(this._container, {
             set: (target: Map<any, any>, key: string | number | symbol, value: any, receiver: any): boolean => {
@@ -44,5 +44,15 @@ export class TwingContext<K, V> {
 
     delete(key: K): boolean {
         return this._container.delete(key);
+    }
+
+    clone(): TwingContext<K, V> {
+        let container: Map<K, V> = new Map();
+
+        for (let [k, v] of this._container) {
+            container.set(k, v);
+        }
+
+        return new TwingContext(container);
     }
 }

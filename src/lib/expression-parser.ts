@@ -565,6 +565,15 @@ export class TwingExpressionParser {
             testArguments = this.parser.getExpressionParser().parseArguments(true);
         }
 
+        if ((name === 'defined') && (node.getType() === TwingNodeType.EXPRESSION_NAME)) {
+            let alias = this.parser.getImportedSymbol('function', node.getAttribute('name'));
+
+            if (alias !== null) {
+                node = new TwingNodeExpressionMethodCall(alias.node, alias.name, new TwingNodeExpressionArray(new Map(), node.getTemplateLine(), node.getTemplateColumn()), node.getTemplateLine(), node.getTemplateColumn());
+                node.setAttribute('safe', true);
+            }
+        }
+
         return nodeFactory.call(this, node, name, testArguments, this.parser.getCurrentToken().getLine());
     }
 

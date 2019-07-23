@@ -46,6 +46,13 @@ class TwingParserStackEntry {
     }
 }
 
+type TwingParserImportedSymbolAlias = {
+    name: string,
+    node: TwingNodeExpression
+};
+type TwingParserImportedSymbolType = Map<string, TwingParserImportedSymbolAlias>;
+type TwingParserImportedSymbol = Map<string, TwingParserImportedSymbolType>;
+
 export class TwingParser {
     private stack: Array<TwingParserStackEntry> = [];
     private stream: TwingTokenStream;
@@ -57,7 +64,7 @@ export class TwingParser {
     private blockStack: Array<string>;
     private macros: Map<string, TwingNode>;
     private env: TwingEnvironment;
-    private importedSymbols: Array<Map<string, Map<string, { name: string, node: TwingNodeExpression }>>>;
+    private importedSymbols: Array<TwingParserImportedSymbol>;
     private traits: Map<string, TwingNode>;
     private embeddedTemplates: Array<TwingNodeModule> = [];
     private varNameSalt: number = 0;
@@ -120,8 +127,7 @@ export class TwingParser {
             if (this.parent !== null && (body = this.filterBodyNodes(body)) === null) {
                 body = new TwingNode();
             }
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof TwingErrorSyntax) {
                 if (!e.getSourceContext()) {
                     e.setSourceContext(this.stream.getSourceContext());
@@ -223,8 +229,7 @@ export class TwingParser {
                             if (Array.isArray(test) && (test.length > 1) && (test[0] instanceof TwingTokenParser)) {
                                 e.appendMessage(` (expecting closing tag for the "${test[0].getTag()}" tag defined near line ${lineno}).`);
                             }
-                        }
-                        else {
+                        } else {
                             e = new TwingErrorSyntax(
                                 `Unknown "${token.getValue()}" tag.`,
                                 token.getLine(),
@@ -275,8 +280,15 @@ export class TwingParser {
         return this.blockStack;
     }
 
+    /**
+     * Return the most recent block name.
+     *
+     * @return {string}
+     */
     peekBlockStack() {
-        return this.blockStack[this.blockStack.length - 1];
+        let length = this.blockStack.length;
+
+        return length > 0 ? this.blockStack[length - 1] : null;
     }
 
     popBlockStack() {
@@ -344,18 +356,31 @@ export class TwingParser {
         localScopeType.set(alias, {name: name, node: node});
     }
 
-    getImportedSymbol(type: string, alias: string): { node: TwingNodeExpression, name: string } {
-        let result = null;
+    getImportedSymbol(type: string, alias: string): TwingParserImportedSymbolAlias {
+        let result: TwingParserImportedSymbolAlias = null;
 
-        this.importedSymbols.forEach(function (importedSymbol) {
+        let testImportedSymbol = (importedSymbol: TwingParserImportedSymbol) => {
             if (importedSymbol.has(type)) {
                 let importedSymbolType = importedSymbol.get(type);
 
                 if (importedSymbolType.has(alias)) {
-                    result = importedSymbolType.get(alias);
+                    return importedSymbolType.get(alias);
                 }
             }
-        });
+
+            return null;
+        };
+
+        let length = this.importedSymbols.length;
+
+        if (length > 0) {
+            result = testImportedSymbol(this.importedSymbols[0]);
+
+            // if the symbol does not exist in the current scope (0), try in the main/global scope (last index)
+            if (!result && (length > 1)) {
+                result = testImportedSymbol(this.importedSymbols[length - 1]);
+            }
+        }
 
         return result;
     }

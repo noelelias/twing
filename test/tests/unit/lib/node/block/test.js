@@ -28,6 +28,7 @@ tap.test('node/block', function (test) {
 
         test.same(compiler.compile(node).getSource(), `// line 1, column 1
 block_foo(context, blocks = new Map()) {
+    let macros = this.macros.clone();
     Runtime.echo(\`foo\`);
 }
 

@@ -64,7 +64,7 @@ export class TwingTokenStream {
             let line = token.getLine();
 
             throw new TwingErrorSyntax(
-                `${message ? message + '. ' : ''}Unexpected token "${TwingToken.typeToEnglish(token.getType())}" of value "${token.getValue()}" ("${TwingToken.typeToEnglish(type)}" expected${value ? ` with value "${value}"` : ''}).`,
+                `${message ? message + '. ' : ''}Unexpected token "${TwingToken.typeToEnglish(token.getType())}"${token.getValue() ? ` of value "${token.getValue()}"` : ''} ("${TwingToken.typeToEnglish(type)}" expected${value ? ` with value "${value}"` : ''}).`,
                 line,
                 this.source
             );

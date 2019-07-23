@@ -60,6 +60,8 @@ tap.test('node/module', function (test) {
             super(env);
 
             this.source = this.getSourceContext();
+            this.macros = new Runtime.TwingContext();
+            let macros = new Runtime.TwingContext();
 
             this.parent = false;
 
@@ -68,6 +70,7 @@ tap.test('node/module', function (test) {
         }
 
         doDisplay(context, blocks = new Map()) {
+            let macros = this.macros.clone();
             // line 1, column 1
             Runtime.echo(\`foo\`);
         }
@@ -77,7 +80,7 @@ tap.test('node/module', function (test) {
         }
 
         getDebugInfo() {
-            return new Map([[20, {"line": 1, "column": 1}]]);
+            return new Map([[23, {"line": 1, "column": 1}]]);
         }
 
         getSourceContext() {
@@ -118,6 +121,8 @@ tap.test('node/module', function (test) {
             super(env);
 
             this.source = this.getSourceContext();
+            this.macros = new Runtime.TwingContext();
+            let macros = new Runtime.TwingContext();
 
             this.blocks = new Map([
             ]);
@@ -129,8 +134,9 @@ tap.test('node/module', function (test) {
         }
 
         doDisplay(context, blocks = new Map()) {
+            let macros = this.macros.clone();
             // line 2, column 1
-            context.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2);
+            macros.proxy[\`macro\`] = this.macros.proxy[\`macro\`] = this.loadTemplate(\`foo.twig\`, \`foo.twig\`, 2);
             // line 1, column 1
             this.parent = this.loadTemplate(\`layout.twig\`, \`foo.twig\`, 1);
             this.parent.display(context, Runtime.merge(this.blocks, blocks));
@@ -145,7 +151,7 @@ tap.test('node/module', function (test) {
         }
 
         getDebugInfo() {
-            return new Map([[25, {"line": 1, "column": 1}], [23, {"line": 2, "column": 1}], [18, {"line": 1, "column": 1}]]);
+            return new Map([[28, {"line": 1, "column": 1}], [26, {"line": 2, "column": 1}], [20, {"line": 1, "column": 1}]]);
         }
 
         getSourceContext() {
@@ -203,6 +209,8 @@ tap.test('node/module', function (test) {
             super(env);
 
             this.source = this.getSourceContext();
+            this.macros = new Runtime.TwingContext();
+            let macros = new Runtime.TwingContext();
 
             this.blocks = new Map([
             ]);
@@ -214,6 +222,7 @@ tap.test('node/module', function (test) {
         }
 
         doDisplay(context, blocks = new Map()) {
+            let macros = this.macros.clone();
             // line 4, column 1
             context.proxy[\`foo\`] = \`foo\`;
             // line 2, column 1
@@ -229,7 +238,7 @@ tap.test('node/module', function (test) {
         }
 
         getDebugInfo() {
-            return new Map([[25, {"line": 2, "column": 1}], [23, {"line": 4, "column": 1}], [18, {"line": 2, "column": 1}]]);
+            return new Map([[28, {"line": 2, "column": 1}], [26, {"line": 4, "column": 1}], [20, {"line": 2, "column": 1}]]);
         }
 
         getSourceContext() {
