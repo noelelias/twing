@@ -1,30 +1,14 @@
-import { TwingLoaderArray, TwingLexer, TwingEnvironment, TwingLoaderNull } from "../../main";
 import { Token } from "twig-lexer";
-
-type IWebTemplate = {
-    name:string;
-    source:string;
-    options?:object;
-}
+import { TwingLoaderArray } from "./array";
+import { TwingLexer } from "../lexer";
+import { TwingEnvironmentNode } from "../environment/node";
+import { TwingLoaderNull } from "./null";
 
 /**
  * Loads template from a user defined function (made for the browser).
  *
  * @author Noel Schenk <schenknoel@gmail.com>
  */
-
-class WebTemplate implements IWebTemplate{
-    name:string;
-    source:string;
-    options?:object;
-    constructor(params:IWebTemplate){
-        this.name = params.name;
-        this.source = params.source;
-        this.options = params.options;
-
-    }
-}
-
 export class TwingWebLoader extends TwingLoaderArray{
     readonly loader:(path:string)=>Promise<string>;
     private readonly isLoaded:Promise<void>; //doesn't load the template but contains the then function which fires once all the templates are loaded
@@ -60,7 +44,7 @@ export class TwingWebLoader extends TwingLoaderArray{
     }
     private preLoadTemplates(templates:WebTemplate[]){
         let allTemplates = templates.map(template=>{
-            let lexedString:Token[] = new TwingLexer(new TwingEnvironment(new TwingLoaderNull()), template.options).tokenize(template.source);
+            let lexedString:Token[] = new TwingLexer(new TwingEnvironmentNode(new TwingLoaderNull()), template.options).tokenize(template.source);
             let promisedTemplates = <Promise<WebTemplate[]>[]>lexedString.map((v:Token, i:number, tt:Token[])=>{
                 let val:string = v.value || '';
                 if(val.includes('include')){
@@ -93,5 +77,23 @@ export class TwingWebLoader extends TwingLoaderArray{
                 });
             });
         });
+    }
+}
+
+type IWebTemplate = {
+    name:string;
+    source:string;
+    options?:object;
+}
+
+class WebTemplate implements IWebTemplate{
+    name:string;
+    source:string;
+    options?:object;
+    constructor(params:IWebTemplate){
+        this.name = params.name;
+        this.source = params.source;
+        this.options = params.options;
+
     }
 }
