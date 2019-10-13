@@ -21,6 +21,7 @@ tape('main and browser indexes', (test) => {
         'TwingFunction',
         'TwingLexer',
         'TwingLoaderArray',
+        'TwingWebLoader',
         'TwingLoaderChain',
         'TwingLoaderFilesystem',
         'TwingLoaderNull',

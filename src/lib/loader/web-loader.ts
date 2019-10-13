@@ -45,10 +45,11 @@ export class TwingWebLoader extends TwingLoaderArray{
     private preLoadTemplates(templates:WebTemplate[]){
         let allTemplates = templates.map(template=>{
             let lexedString:Token[] = new TwingLexer(new TwingEnvironmentNode(new TwingLoaderNull()), template.options).tokenize(template.source);
-            let promisedTemplates = <Promise<WebTemplate[]>[]>lexedString.map((v:Token, i:number, tt:Token[])=>{
+            let promisedTemplates = <Promise<WebTemplate[]>[]>lexedString.filter(v=>{return v.type.match(/(NAME|STRING)/)}).map((v:Token, i:number, tt:Token[])=>{
                 let val:string = v.value || '';
+                console.log(tt);
                 if(val.includes('include')){
-                    return this.loadTemplate(tt[i+3].value);
+                    return this.loadTemplate(tt[i+1].value);
                 }else{
                     return null;
                 }
