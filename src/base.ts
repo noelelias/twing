@@ -16,6 +16,7 @@ export {TwingFilter} from "./lib/filter";
 export {TwingFunction} from "./lib/function";
 export {TwingLexer} from "./lib/lexer";
 export {TwingLoaderArray} from "./lib/loader/array";
+export {TwingWebLoader} from "./lib/loader/web-loader";
 export {TwingLoaderChain} from "./lib/loader/chain";
 export {TwingLoaderNull} from "./lib/loader/null";
 export {TwingLoaderInterface} from "./lib/loader-interface";
