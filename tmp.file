@@ -1,8 +1,9 @@
 import { Token } from "twig-lexer";
 import { TwingLoaderArray } from "./array";
 import { TwingLexer } from "../lexer";
-import { TwingEnvironmentBrowser } from '../environment/browser';
+import { TwingEnvironmentNode } from "../environment/node";
 import { TwingLoaderNull } from "./null";
+import { TwingEnvironment } from '../../main';
 import { TwingFilter } from "../filter";
 import * as Dom from 'incremental-dom';
 
@@ -59,7 +60,7 @@ export class TwingWebLoader extends TwingLoaderArray{
 
     private preLoadTemplates(templates:WebTemplate[]){
         let allTemplates = templates.map(template=>{
-            let lexedString:Token[] = new TwingLexer(new TwingEnvironmentBrowser(new TwingLoaderNull()), template.options).tokenize(template.source);
+            let lexedString:Token[] = new TwingLexer(new TwingEnvironmentNode(new TwingLoaderNull()), template.options).tokenize(template.source);
             let promisedTemplates = <Promise<WebTemplate[]>[]>lexedString.filter(v=>{return v.type.match(/(NAME|STRING)/)}).map((v:Token, i:number, tt:Token[])=>{
                 let val:string = v.value || '';
                 if(val.includes('include')){
@@ -100,7 +101,7 @@ export class TwingWebLoader extends TwingLoaderArray{
      * call this function to be able to render Dom elements
      */
     domPreCompile(){
-        let twingEnv = new TwingEnvironmentBrowser(this);
+        let twingEnv = new TwingEnvironment(this);
         let filter = new TwingFilter('dom', (...args)=>{
             return '{!' + args.join('.') + '!}';
         }, []);
@@ -144,25 +145,18 @@ export class TwingWebLoader extends TwingLoaderArray{
 
     /**
      * Add HTML to the Dom without the need of modifying it's content
-     * TODO add support for parameters already implementet in the regex
      * @param content the content to add
      * @param document optional passing the document mainly used for testing it inside node with jsdom 
      */
     private domAddHtml(content:string, document?:Document) {
-        let regex = /((<([^\/]\S*?)>)|(<([^\/].*?) (.*?)>)|(<\/(\S*?)>)|(<\/(.*?) (.*?)>)|(.))/gs;
-        let match;
-        while((match = regex.exec(content)) !== null){
-            ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'].includes(match[3]) ? Dom.elementVoid(match[3]) : 
-                (match[3] ? Dom.elementOpen(match[3]) : undefined);
-            match[12] ? Dom.text(match[12]) : undefined;
-            match[8] ? Dom.elementClose(match[8]) : undefined;
-        }
-
-        /*const el = Dom.elementOpen('html-blob');
+        const el = Dom.elementOpen('html-blob');
         Dom.skip()
         Dom.elementClose('html-blob');
-        el.parentNode.append(...template.content.childNodes);
-        el.remove();*/
+
+        let template = document.createElement('template'); //https://stackoverflow.com/a/35385518/4563136
+        content = content.trim();
+        template.innerHTML = content;
+        el.replaceWith(template.content.firstChild);
     }
 }
 
