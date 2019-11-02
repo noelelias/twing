@@ -5,7 +5,7 @@ import { TwingEnvironmentNode } from "../environment/node";
 import { TwingLoaderNull } from "./null";
 import { TwingEnvironment } from '../../main';
 import {TwingFilter} from "../filter";
-import Dom = require('incremental-dom');
+import * as Dom from 'incremental-dom'
 
 
 /**
