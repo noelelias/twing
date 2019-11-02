@@ -44,6 +44,7 @@
     "docs:install": "cd docs && bundle install --path vendor/bundle"
   },
   "dependencies": {
+    "@types/incremental-dom": "^0.5.0",
     "@types/luxon": "^1.4.0",
     "camelcase": "^4.1.0",
     "capitalize": "^1.0.0",
@@ -52,6 +53,7 @@
     "fs-extra": "^5.0.0",
     "htmlspecialchars": "^1.0.5",
     "iconv-lite": "^0.4.19",
+    "incremental-dom": "^0.7.0",
     "is-integer": "^1.0.7",
     "is-number": "^5.0.0",
     "is-plain-object": "^2.0.4",
@@ -72,6 +74,7 @@
     "var-validator": "0.0.3"
   },
   "devDependencies": {
+    "@types/jsdom": "^12.2.4",
     "@types/locutus": "0.0.5",
     "@types/node": "^9.3.0",
     "@types/sinon": "^4.3.3",
@@ -79,11 +82,11 @@
     "@types/tmp": "0.0.33",
     "@typescript-eslint/eslint-plugin": "^2.3.2",
     "@typescript-eslint/parser": "^2.3.2",
-    "browserify": "^16.2.3",
     "coveralls": "^3.0.0",
     "eslint": "^6.5.1",
     "eslint-plugin-import": "^2.18.2",
     "fs-finder": "^1.8.1",
+    "jsdom": "^15.2.0",
     "nyc": "^13.3.0",
     "replace-in-file": "^3.4.2",
     "rimraf": "^2.6.2",

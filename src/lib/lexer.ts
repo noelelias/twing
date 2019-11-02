@@ -48,7 +48,7 @@ export const typeToEnglish = (type: TokenType): string => {
     }
 };
 
-type TwingLexerOptions = {
+export type TwingLexerOptions = {
     interpolation_pair?: [string, string],
     comment_pair?: [string, string],
     tag_pair?: [string, string],
